@@ -37,7 +37,10 @@ fetch(`http://localhost:3000/api/products/${choisirLeId}`)
         idDescription.textContent = listeProduit.description;
         
         for(color of listeProduit.colors) {
-            idCouleur.innerHTML += `<option value="${color}">${color}</option>`;
+            let option = document.createElement('option');
+            option.value = color;
+            option.textContent = color;
+            idCouleur.appendChild(option);
         }
     })
     .catch(function(error) {
@@ -48,19 +51,30 @@ let quantity = document.getElementById("quantity");
 quantity.value = 1;
 
 bouton.addEventListener("click", function() {
-    if(quantity.value == 0 || quantity.value > 100) {
+    let quantite = parseInt(quantity.value);
+    if(quantite <= 0 || quantite > 100) {
         alert("Erreur, veuillez renter le nombre de canapés voulue entre 1 et 100");
         return false;
     }
+
+    if(idCouleur.value === "") {
+        alert("Erreur, veuillez sélectionner une couleur");
+        return false;
+    }
+
     let listePanier = {
         id: listeProduit._id,
         couleur: idCouleur.value,
-        quantite: quantity.value
+        quantite: quantite
     }
-    if(listePanier.id == listeProduit._id && listeProduit.colors == listePanier.couleur) {
-        listePanier.quantite += quantity.value;
+    
+    let identifiantDeLigne = listeProduit._id + "_" + idCouleur.value;
+    if(localStorage.getItem(identifiantDeLigne) === null) {
+        localStorage.setItem(identifiantDeLigne, JSON.stringify(listePanier));
+    } else {
+        listePanier = JSON.parse(localStorage.getItem(identifiantDeLigne));
+        listePanier.quantite += quantite;
+        localStorage.setItem(identifiantDeLigne, JSON.stringify(listePanier));
     }
-    let collection = localStorage.setItem("test", JSON.stringify(listePanier));
-    JSON.parse(localStorage.getItem(collection));
     alert("C'est cliqué");
 });
