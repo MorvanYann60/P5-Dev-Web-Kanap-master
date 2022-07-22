@@ -1,119 +1,168 @@
-let produits = [];
 let keyname
-let listeAffichage
-
+let listeInfos = [];
+let calculPrix = [];
+//let contact = {};
+let test1 = 0;
 
 for(let i=0; i < localStorage.length; i++) {
     keyname = localStorage.key(i);
 
     console.log(keyname);
-    produits += localStorage.getItem(keyname);
-}
+    let ligneDePanier = JSON.parse(localStorage.getItem(keyname));
+    console.log(ligneDePanier);
 
-console.log(produits);
-
-// let prenom = document.getElementById("firstName").value;
-// let nom = document.getElementById("lastName").value;
-// let adresse = document.getElementById("address").value;
-// let ville = document.getElementById("city").value;
-// let mail = document.getElementById("email").value;
-
-// contact = {
-//     prenom: prenom,
-//     nom: nom,
-//     adresse: adresse,
-//     ville: ville,  
-//     mail: mail
-// };
-
-// console.log(contact);
-
-const contact = {
-    firstName: "test",
-    lastName: "test",
-    address: "test",
-    city: "test",
-    email: "test"
-};
-
-const products = ["034707184e8e4eefb46400b5a3774b5f"];
-
-let aEnvoyer = {
-    products,
-    contact
-};
-
-fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-    body: JSON.stringify(aEnvoyer),
-    headers: {
-        "Content-Type": "application/json",
-    },
-})
+    fetch(`http://localhost:3000/api/products/${ligneDePanier.id}`)
     .then(function(response) {
         if(response.ok) {
             return response.json();
         }
     })
-    .then(function(affichage) {
-        listeAffichage = affichage;
-        console.log(listeAffichage);
+    .then(function(infos) {
+        listeInfos = infos;
+        console.log(listeInfos);
+        let section = document.getElementById("cart__items");
+        let article = document.createElement("article");
+        article.className = "cart__item";
+        article.dataset.id = ligneDePanier.id;
+        article.dataset.color = ligneDePanier.couleur;
+        section.appendChild(article);
+
+        let divPanier1 = document.createElement("div");
+        divPanier1.className = "cart__item__img";
+        article.appendChild(divPanier1);
+
+        let imgPanier = document.createElement("img");
+        imgPanier.src = listeInfos.imageUrl;
+        imgPanier.alt = listeInfos.altTxt;
+        divPanier1.appendChild(imgPanier);
+
+        let divPanier2 = document.createElement("div");
+        divPanier2.className = "cart__item__content";
+        article.appendChild(divPanier2);
+
+        let divDescription = document.createElement("div");
+        divDescription.className = "cart__item__content__description";
+        divPanier2.appendChild(divDescription);
+
+        let titreDescription = document.createElement("h2");
+        titreDescription.textContent = listeInfos.name;
+        divDescription.appendChild(titreDescription);
+
+        let texteDescription = document.createElement("p");
+        texteDescription.textContent = ligneDePanier.couleur;
+        divDescription.appendChild(texteDescription);
+
+        let prixDescription = document.createElement("p");
+        prixDescription.textContent = listeInfos.price + "€";
+        divDescription.appendChild(prixDescription);
+        
+        let divSettings = document.createElement("div");
+        divSettings.className = "cart__item__content__settings";
+        divPanier2.appendChild(divSettings);
+
+        let divSettingsQuantity = document.createElement("div");
+        divSettingsQuantity.className = "cart__item__content__settings__quantity";
+        divSettings.appendChild(divSettingsQuantity);
+
+        let texteQuantity = document.createElement("p");
+        texteQuantity.textContent = "Qté : ";
+        divSettingsQuantity.appendChild(texteQuantity);
+
+        let inputQuantity = document.createElement("input");
+        inputQuantity.type = "number";
+        inputQuantity.className = "itemQuantity";
+        inputQuantity.name = "itemQuantity";
+        inputQuantity.min = "1";
+        inputQuantity.max = "100";
+        inputQuantity.value = ligneDePanier.quantite;
+        divSettingsQuantity.appendChild(inputQuantity);
+
+        let divSettingsSupprimer = document.createElement("div");
+        divSettingsSupprimer.className = "cart__item__content__settings__delete";
+        divSettings.appendChild(divSettingsSupprimer);
+
+        let texteSupprimer = document.createElement("p");
+        texteSupprimer.className = "deleteItem";
+        texteSupprimer.textContent = "Supprimer";
+        divSettingsSupprimer.appendChild(texteSupprimer);
+
+        for(let i = 0; i < ligneDePanier.quantite; i++) {
+            test1 ++;
+        }
+
+        let affichageArticles = document.getElementById("totalQuantity");
+        affichageArticles.textContent = test1;
+
+        for(let i = 0; i < ligneDePanier.quantite; i++) {
+            let test2 = listeInfos.price;
+            console.log(test2);
+            calculPrix.push(test2);
+            //console.log(calculPrix);
+        }
+
+        let reducer = (accumulator, currentValue) => accumulator + currentValue;
+        let prixTotal = calculPrix.reduce(reducer);
+        console.log(prixTotal);
+
+        let affichagePrix = document.getElementById("totalPrice");
+        affichagePrix.textContent = prixTotal;
     })
     .catch(function(error) {
         alert(error);
-    })
+    });  
+}
 
+// let btnCommander = document.getElementById("order");
 
-let section = document.getElementById("cart__items");
-let article = document.createElement("article");
-article.className = "cart__item";
-section.appendChild(article);
+// btnCommander.addEventListener("click", (event)=> {
+//     event.preventDefault();
 
-let divPanier1 = document.createElement("div");
-divPanier1.className = "cart__item__img";
-article.appendChild(divPanier1);
+//     contact = {
+//         firstName: document.getElementById("firstName").value,
+//         lastName: document.getElementById("lastName").value,
+//         address: document.getElementById("address").value,
+//         city: document.getElementById("city").value,
+//         email: document.getElementById("email").value
+//     }
 
-let imgPanier = document.createElement("img");
-imgPanier.src = "";
-imgPanier.alt = "";
-divPanier1.appendChild(imgPanier);
-
-let divPanier2 = document.createElement("div");
-divPanier2.className = "cart__item__content";
-article.appendChild(divPanier2);
-
-let divDescription = document.createElement("div");
-divDescription.className = "cart__item__content__description";
-divPanier2.appendChild(divDescription);
-
-
-
-// let test = {
-//     nom: "Morvan",
-//     prenom: "Yann"
-// };
-
-// fetch("https://jsonplaceholder.typicode.com/users", {
-//     method: "POST",
-//     body: JSON.stringify(test),
-//     headers: {
-//         "Content-Type": "application/json",
-//     },
+//     localStorage.setItem("contact", JSON.stringify(contact));
 // })
-//     .then(function(response) {
-//         if(response.ok) {
-//             return response.json();
-//         }
-//     })
-//     .then(function(essai) {
-//         let listeEssai = essai;
-//         console.log(listeEssai);
 
-//         let cart = document.getElementById("cart__items");
-//         let nom = document.createElement("p");
-//         let prenom = document.createElement("p");
-//         nom.textContent = listeEssai.nom;
-//         prenom.textContent = listeEssai.prenom;
-//         cart.appendChild(nom);
-//         cart.appendChild(prenom);
-//     })
+let contact = {
+    firstName: "test",
+    lastName: "test",
+    address: "test",
+    city: "test",
+    email: "test"
+}
+
+let products = ["8906dfda133f4c20a9d0e34f18adcf06"];
+
+let btnCommander = document.getElementById("order");
+
+// btnCommander.addEventListener("click", (event)=> {
+//      event.preventDefault();
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        body: JSON.stringify( {
+            contact: contact,
+            products: products
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then(function(response) {
+            if(response.ok) {
+                return response.json();
+            }
+        })
+        .then(function(affichage) {
+            console.log(affichage);
+            //localStorage.setItem("confirmationProduit", JSON.stringify(affichage));
+            //window.location.href = "confirmation.html";
+        })
+        .catch(function(error) {
+            alert(error);
+        })
+//})
