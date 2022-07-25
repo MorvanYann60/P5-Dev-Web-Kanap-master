@@ -2,7 +2,9 @@ let keyname
 let listeInfos = [];
 let calculPrix = [];
 //let contact = {};
-let test1 = 0;
+let quantitePanier = 0;
+let prixTotal = 0;
+let products = [];
 
 for(let i=0; i < localStorage.length; i++) {
     keyname = localStorage.key(i);
@@ -20,6 +22,9 @@ for(let i=0; i < localStorage.length; i++) {
     .then(function(infos) {
         listeInfos = infos;
         console.log(listeInfos);
+
+        products.push(ligneDePanier.id);
+
         let section = document.getElementById("cart__items");
         let article = document.createElement("article");
         article.className = "cart__item";
@@ -75,6 +80,7 @@ for(let i=0; i < localStorage.length; i++) {
         inputQuantity.min = "1";
         inputQuantity.max = "100";
         inputQuantity.value = ligneDePanier.quantite;
+        //inputQuantity.addEventListener('change', changerQuantite);
         divSettingsQuantity.appendChild(inputQuantity);
 
         let divSettingsSupprimer = document.createElement("div");
@@ -84,25 +90,15 @@ for(let i=0; i < localStorage.length; i++) {
         let texteSupprimer = document.createElement("p");
         texteSupprimer.className = "deleteItem";
         texteSupprimer.textContent = "Supprimer";
+        texteSupprimer.addEventListener('click', supprimerLigne);
         divSettingsSupprimer.appendChild(texteSupprimer);
 
-        for(let i = 0; i < ligneDePanier.quantite; i++) {
-            test1 ++;
-        }
+        quantitePanier += ligneDePanier.quantite;
 
         let affichageArticles = document.getElementById("totalQuantity");
-        affichageArticles.textContent = test1;
+        affichageArticles.textContent = quantitePanier;
 
-        for(let i = 0; i < ligneDePanier.quantite; i++) {
-            let test2 = listeInfos.price;
-            console.log(test2);
-            calculPrix.push(test2);
-            //console.log(calculPrix);
-        }
-
-        let reducer = (accumulator, currentValue) => accumulator + currentValue;
-        let prixTotal = calculPrix.reduce(reducer);
-        console.log(prixTotal);
+        prixTotal += ligneDePanier.quantite * listeInfos.price;
 
         let affichagePrix = document.getElementById("totalPrice");
         affichagePrix.textContent = prixTotal;
@@ -112,36 +108,19 @@ for(let i=0; i < localStorage.length; i++) {
     });  
 }
 
-// let btnCommander = document.getElementById("order");
-
-// btnCommander.addEventListener("click", (event)=> {
-//     event.preventDefault();
-
-//     contact = {
-//         firstName: document.getElementById("firstName").value,
-//         lastName: document.getElementById("lastName").value,
-//         address: document.getElementById("address").value,
-//         city: document.getElementById("city").value,
-//         email: document.getElementById("email").value
-//     }
-
-//     localStorage.setItem("contact", JSON.stringify(contact));
-// })
-
-let contact = {
-    firstName: "test",
-    lastName: "test",
-    address: "test",
-    city: "test",
-    email: "test"
-}
-
-let products = ["8906dfda133f4c20a9d0e34f18adcf06"];
-
 let btnCommander = document.getElementById("order");
 
-// btnCommander.addEventListener("click", (event)=> {
-//      event.preventDefault();
+btnCommander.addEventListener("click", (event)=> {
+    event.preventDefault();
+
+    let contact = {
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        email: document.getElementById("email").value
+    }
+
     fetch("http://localhost:3000/api/products/order", {
         method: "POST",
         body: JSON.stringify( {
@@ -159,10 +138,25 @@ let btnCommander = document.getElementById("order");
         })
         .then(function(affichage) {
             console.log(affichage);
-            //localStorage.setItem("confirmationProduit", JSON.stringify(affichage));
-            //window.location.href = "confirmation.html";
+            localStorage.setItem("confirmationProduit", JSON.stringify(affichage));
+            window.location.href = "confirmation.html";
         })
         .catch(function(error) {
             alert(error);
         })
-//})
+})
+
+function supprimerLigne(event) {
+    let article = event.target.closest("article");
+    let id = article.dataset.id;
+    let color = article.dataset.color;
+    let ligneDePanier = JSON.parse(localStorage.getItem(id + "_" + color));
+    localStorage.removeItem(keyname);
+    let section = document.getElementById("cart__items");
+    section.removeChild(article);
+    let affichagePrix = document.getElementById("totalPrice");
+    affichagePrix.textContent = prixTotal;
+    window.history.go(0);
+
+    console.log(ligneDePanier);
+}
