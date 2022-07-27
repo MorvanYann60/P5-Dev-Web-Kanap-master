@@ -121,6 +121,14 @@ btnCommander.addEventListener("click", (event)=> {
         email: document.getElementById("email").value
     }
 
+    // if(/^[A-Za-z]{3,20}$/.test(lePrenom)) {
+    //     let divQuestionPrenom = document.getElementsByClassName("cart__order__form__question")[0];
+    //     let pQuestionPrenom = document.getElementById("firstNameErrorMsg");
+    //     pQuestionPrenom.textContent = "Erreur, veuillez rentrer un prénom valide";
+    //     divQuestionPrenom.appendChild(pQuestionPrenom);
+    //     return false;
+    // }
+
     fetch("http://localhost:3000/api/products/order", {
         method: "POST",
         body: JSON.stringify( {
@@ -138,8 +146,8 @@ btnCommander.addEventListener("click", (event)=> {
         })
         .then(function(affichage) {
             console.log(affichage);
-            localStorage.setItem("confirmationProduit", JSON.stringify(affichage));
-            window.location.href = "confirmation.html";
+            // localStorage.setItem("confirmationProduit", JSON.stringify(affichage));
+            // window.location.href = "confirmation.html";
         })
         .catch(function(error) {
             alert(error);
@@ -154,9 +162,9 @@ function supprimerLigne(event) {
     localStorage.removeItem(keyname);
     let section = document.getElementById("cart__items");
     section.removeChild(article);
+    prixTotal += ligneDePanier.quantite * listeInfos.price;
     let affichagePrix = document.getElementById("totalPrice");
     affichagePrix.textContent = prixTotal;
-    window.history.go(0);
 
     console.log(ligneDePanier);
 }
