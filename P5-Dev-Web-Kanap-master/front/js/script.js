@@ -35,5 +35,3 @@ function totalInfos(canapes) {
         descriptionElement.textContent = produit.description;
     }
 }
-
-//alert("bonjour le monde");

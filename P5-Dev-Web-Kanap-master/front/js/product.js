@@ -76,5 +76,4 @@ bouton.addEventListener("click", function() {
         listePanier.quantite += quantite;
         localStorage.setItem(identifiantDeLigne, JSON.stringify(listePanier));
     }
-    alert("C'est cliqué");
 });

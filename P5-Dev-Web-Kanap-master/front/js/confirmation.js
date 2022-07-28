@@ -1,4 +1,4 @@
-let orderID = document.getElementById("orderId");
-let orderConfirm = JSON.parse(localStorage.getItem("confirmationProduit"));
+const urlParams = new URLSearchParams(window.location.search);
+const orderId = urlParams.get("id");
 
-orderID.textContent = orderConfirm.orderId;
+document.getElementById("orderId").textContent = orderId;
