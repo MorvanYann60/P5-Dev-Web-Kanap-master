@@ -5,6 +5,7 @@ let quantitePanier = 0;
 let prixTotal = 0;
 let products = [];
 
+//Boucle pour récupérer les infos du locale storage
 for(let i=0; i < localStorage.length; i++) {
     keyname = localStorage.key(i);
 
@@ -12,6 +13,7 @@ for(let i=0; i < localStorage.length; i++) {
     let ligneDePanier = JSON.parse(localStorage.getItem(keyname));
     console.log(ligneDePanier);
 
+    //Méthode fetch contenant l'API et les id des canapés selectionnés dans la page produits
     fetch(`http://localhost:3000/api/products/${ligneDePanier.id}`)
     .then(function(response) {
         if(response.ok) {
@@ -22,8 +24,10 @@ for(let i=0; i < localStorage.length; i++) {
         listeInfos = infos;
         console.log(listeInfos);
 
+        //Ajout des id dans le tableau products
         products.push(ligneDePanier.id);
 
+        //Modification du DOM pour afficher les contenus
         let section = document.getElementById("cart__items");
         let article = document.createElement("article");
         article.className = "cart__item";
@@ -109,15 +113,18 @@ for(let i=0; i < localStorage.length; i++) {
 
 let btnCommander = document.getElementById("order");
 
+//Evénement sur le bouton commander de la page panier
 btnCommander.addEventListener("click", (event)=> {
     event.preventDefault();
 
+    //Récupération des valeurs remplies du formulaire dans des variables 
     let firstName = document.getElementById("firstName").value;
     let lastName = document.getElementById("lastName").value;
     let address = document.getElementById("address").value;
     let city = document.getElementById("city").value;
     let email = document.getElementById("email").value;
 
+    //Objet contenant les variables du formulaire
     let contact = {
         firstName: firstName,
         lastName: lastName,
@@ -126,12 +133,14 @@ btnCommander.addEventListener("click", (event)=> {
         email: email
     }
 
+    //Mise en place des éléments autorisés pour le formulaire
     let nomRegex = /^[A-Za-z\é\è\ê\-]+$/;
     let prenomRegex = /^[A-Za-z\é\è\ê\-]+$/;
     let adresseRegex = /^[A-Za-z0-9\s]{5,50}$/;
     let villeRegex = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
     let adresseMailRegex = /^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})$/;
 
+    //Conditions qui renvoie une erreur en cas de mauvaise manipulation
     if(!prenomRegex.test(firstName)) {
         let pQuestionPrenom = document.getElementById("firstNameErrorMsg");
         pQuestionPrenom.textContent = "Erreur, veuillez rentrer un Prénom valide";
@@ -177,6 +186,7 @@ btnCommander.addEventListener("click", (event)=> {
         pQuestionEmail.textContent = "";
     }
 
+    //Méthode fetch qui réécupère l'APi ainsi que l'objet contact et le tableau products
     fetch("http://localhost:3000/api/products/order", {
         method: "POST",
         body: JSON.stringify( {
@@ -194,6 +204,7 @@ btnCommander.addEventListener("click", (event)=> {
         })
         .then(function(data) {
             console.log(data);
+            //Affichage du numéro de commande dans l'URL de la page confirmation
             window.location.href = "confirmation.html?id=" + data.orderId;
         })
         .catch(function(error) {
@@ -201,6 +212,7 @@ btnCommander.addEventListener("click", (event)=> {
         })
 })
 
+//Fonction pour supprimer un article du panier 
 function supprimerLigne(event) {
     let article = event.target.closest("article");
     let id = article.dataset.id;
@@ -213,6 +225,7 @@ function supprimerLigne(event) {
     miseAJourTotaux();
 }
 
+//Fonction pour modifier la quantité d'un article du panier
 function changerQuantite(event) {
     let article = event.target.closest("article");
     let id = article.dataset.id;
@@ -225,6 +238,7 @@ function changerQuantite(event) {
 
 }
 
+//Fonction qui modifie le prix total et le nombre total d'articles 
 function miseAJourTotaux() {
     let prixTotal = 0;
     let quantitePanier = 0;

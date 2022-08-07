@@ -1,5 +1,7 @@
+//constante qui contient l'API
 const url = "http://localhost:3000/api/products";
 
+//Méthode fetch pour pouvoir accéder au contenue de l'API
 fetch(url)
     .then(function(response) {
         if(response.ok) {
@@ -14,6 +16,7 @@ fetch(url)
         alert(error);
     });
 
+//Fonction contenant une boucle en modifiant le DOM pour afficher le contenue de l'API sur la page d'accueil du site
 function totalInfos(canapes) {
     for(produit of canapes) {
         const section = document.getElementById("items");
