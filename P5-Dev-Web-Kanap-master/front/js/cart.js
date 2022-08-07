@@ -244,7 +244,7 @@ function miseAJourTotaux() {
             let affichageArticles = document.getElementById("totalQuantity");
             affichageArticles.textContent = quantitePanier;
 
-            prixTotal += ligneDePanier.quantite * listeInfos.price;
+            prixTotal += ligneDePanier.quantite * infos.price;
 
             let affichagePrix = document.getElementById("totalPrice");
             affichagePrix.textContent = prixTotal;
